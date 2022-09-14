@@ -1,13 +1,19 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from 'next'
+import type { NextApiRequest, NextApiResponse } from "next";
+import { load } from "cheerio";
+import request from "request-promise";
+import { JSDOM } from "jsdom";
+import puppeteer from "puppeteer";
 
-type Data = {
-  name: string
-}
+export default function handler(req: NextApiRequest, res: NextApiResponse) {
+  request(
+    `https://soundcloud.com/${req.query["q"]}/likes`,
+    (error, response, html) => {
+      if (!error && response.statusCode === 200) {
+        const HTML = load(html);
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<Data>
-) {
-  res.status(200).json({ name: 'John Doe' })
+        res.status(200).json(html);
+      }
+    }
+  );
 }
